@@ -1,0 +1,25 @@
+version: "3"
+services:
+  rust_updater:
+    image: ghcr.io/aldiwildan77/rust-updater
+    container_name: rust_updater
+    command: sleep infinity
+    ports:
+      - 8000:8000
+    environment:
+      - PORT=8000
+    labels: 
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      # WATCHTOWER_MONITOR_ONLY: 'true'
+      # WATCHTOWER_NOTIFICATION_REPORT: true
+      WATCHTOWER_NOTIFICATION_URL: 'discord://xmvyfowisWQXoTDgsZAYn9jz8E1Wgzmh_w6vqyRZW7xGrncR6cECm1PVhUgZ54wEDy7Y@1114553527650492447?title=Watchtower'
+      WATCHTOWER_NOTIFICATION_TEMPLATE: "{{range .}}{{.Time.Format \"2006-01-02 15:04:05\"}} ({{.Level}}): {{.Message}}{{println}}{{end}}"
+      
+    command: --interval 10 --label-enable --cleanup --debug rust_updater # --run-once
